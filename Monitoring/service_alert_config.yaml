@@ -1,0 +1,26 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: message-service-alert-rules
+  labels:
+    release: prometheus-operator
+spec:
+  groups:
+  - name: message-service-rules
+    rules:
+    - alert: HighRequestLatency
+      expr: histogram_quantile(0.9, sum(rate(django_http_requests_latency_seconds_by_view_method[5m])) by (le)) > 1
+      for: 10m
+      labels:
+        severity: warning
+      annotations:
+        summary: High request latency on message-service
+        description: '90th percentile of request duration is higher than 1 second (over the last 5 minutes)'
+    - alert: HighThroughput
+      expr: sum(rate(django_http_requests_total_by_view_transport_method[5m])) > 100
+      for: 10m
+      labels:
+        severity: warning
+      annotations:
+        summary: High request throughput on message-service
+        description: 'Request rate is higher than 100 requests per second (over the last 5 minutes)'

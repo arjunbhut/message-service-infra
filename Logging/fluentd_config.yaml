@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluentd-config
+data:
+  fluent.conf: |
+    <source>
+      @type forward
+      port 24224
+      bind 0.0.0.0
+    </source>
+
+    <match **>
+      @type s3
+
+      # Use environment variables for AWS credentials
+      aws_key_id "#{ENV['AWS_KEY_ID']}"
+      aws_sec_key "#{ENV['AWS_SEC_KEY']}"
+      s3_bucket YOUR_S3_BUCKET_NAME
+      s3_region YOUR_S3_BUCKET_REGION
+
+      # S3 object key format
+      s3_object_key_format %{path}%{time_slice}_%{index}.%{file_extension}
+
+      # Buffer settings
+      <buffer>
+        @type file
+        path /var/log/fluent/s3
+        timekey 1m
+        timekey_wait 10s
+        timekey_use_utc true
+        chunk_limit_size 100m
+      </buffer>
+
+      # File format and compression
+      store_as gzip
+
+      # Retry settings
+      retry_limit 10
+      retry_wait 5s
+
+      # S3 permissions
+      s3_permission private
+    </match>
+
+
