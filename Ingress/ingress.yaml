@@ -4,9 +4,22 @@ metadata:
   name: message-service-ingress
   annotations:
     kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/target-group-attributes: deregistration_delay.timeout_seconds=30
+    elbv2.k8s.aws/pod-readiness-gate-inject: enabled
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
 spec:
+  spec:
+  template:
+    spec:
+      containers:
+      - lifecycle:
+          preStop:
+            exec:
+              command:
+              - /bin/sh
+              - -c
+              - sleep 180
   rules:
     - http:
         paths:
