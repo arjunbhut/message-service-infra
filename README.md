@@ -54,11 +54,3 @@ This repository contains the infrastructure and deployment configuration for the
 ## Usage
 
 Each directory contains specific configurations related to different aspects of the infrastructure and deployment setup. Apply these configurations as per your Kubernetes and AWS setup requirements.
-
-## Contribution
-
-Contributions are welcome. Please make sure to update tests as appropriate and follow the existing conventions in the repository.
-
-## License
-
-Specify your project's license here.
